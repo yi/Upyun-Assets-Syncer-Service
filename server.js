@@ -36,15 +36,13 @@
 
   CMD_SYNC_TIMESTAMPE = 'sync_timestamp';
 
-  TEMPLATE_JOB = "{\n\n  \"LOCAL_DEPOT_ROOT\" : \"" + env.LOCAL_DEPOT_ROOT + "\",\n\n  \"REGEX_FILE_NAME\" : {regFileFilter},\n\n  \"BUCKETNAME\" : \"" + env.BUCKETNAME + "\",\n\n  \"USERNAME\" : \"" + env.USERNAME + "\",\n\n  \"PASSWORD\" : \"" + env.PASSWORD + "\",\n\n  \"REVISION_SENSITIVE\" : {revisionSensitive},\n\n  \"PARALLELY\" : false,\n\n  \"VERBOSE\" : true,\n\n  \"WALK_OPTIONS\" : {\n    \"followLinks\" : false\n  }\n\n}";
+  TEMPLATE_JOB = "{\n\n  \"LOCAL_DEPOT_ROOT\" : \"" + env.LOCAL_DEPOT_ROOT + "\",\n\n  \"REGEX_FILE_NAME\" : {regFileFilter},\n\n  \"BUCKETNAME\" : \"" + env.BUCKETNAME + "\",\n\n  \"USERNAME\" : \"" + env.USERNAME + "\",\n\n  \"PASSWORD\" : \"" + env.PASSWORD + "\",\n\n  \"REVISION_SENSITIVE\" : {revisionSensitive},\n\n  \"PARALLELY\" : false,\n\n  \"VERBOSE\" : false,\n\n  \"WALK_OPTIONS\" : {\n    \"followLinks\" : false\n  }\n\n}";
 
   REG_FILTER_AMF = /_[a-z0-9]{10}\.sgf/;
 
   REG_FILTER_TIMESTAMP = /_amflastmod\.sgf/;
 
   REG_FILTER_GRAPHICS = /[a-z0-9]{11}\.sgf/;
-
-  console.log("TEMPLATE_JOB:" + TEMPLATE_JOB);
 
   KV_CLIENTS = {};
 
@@ -62,7 +60,7 @@
     }
     if (CURRENT_JOB != null) {
       io.sockets.emit('error', {
-        alert: "当前正有一个任务在进行，请等待当前任务完成后在进行操作"
+        message: "当前正有一个任务在进行，请等待当前任务完成后在进行操作"
       });
       return;
     }

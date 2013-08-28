@@ -45,7 +45,7 @@ TEMPLATE_JOB = """
 
   "PARALLELY" : false,
 
-  "VERBOSE" : true,
+  "VERBOSE" : false,
 
   "WALK_OPTIONS" : {
     "followLinks" : false
@@ -60,10 +60,7 @@ REG_FILTER_TIMESTAMP = /_amflastmod\.sgf/
 
 REG_FILTER_GRAPHICS = /[a-z0-9]{11}\.sgf/
 
-
-console.log("TEMPLATE_JOB:"+TEMPLATE_JOB)
-
-
+# console.log("TEMPLATE_JOB:"+TEMPLATE_JOB)
 
 # key: client socket id
 # value: client socket instance
@@ -87,7 +84,7 @@ runJob = (regexpFilter, revisionSensitive) ->
   # only one job at time
   if CURRENT_JOB?
     io.sockets.emit 'error',
-      alert: "当前正有一个任务在进行，请等待当前任务完成后在进行操作"
+      message : "当前正有一个任务在进行，请等待当前任务完成后在进行操作"
     return
 
   content = TEMPLATE_JOB.replace('{regFileFilter}', regexpFilter.toString()).replace('{revisionSensitive}',Boolean(revisionSensitive))
