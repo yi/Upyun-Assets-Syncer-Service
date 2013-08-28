@@ -5,6 +5,8 @@ io = require('socket.io').listen(server)
 util  = require 'util'
 logger = require 'dev-logger'
 child_process = require 'child_process'
+env = require './environment'
+
 
 CURRENT_JOB = null
 
@@ -21,6 +23,38 @@ CMD_SYNC_GRAPHICS = 'sync_graphics'
 CMD_SYNC_AMF = 'sync_amf'
 
 CMD_SYNC_TIMESTAMPE = 'sync_timestamp'
+
+
+TEMPLATE_JOB = """
+{
+
+  "LOCAL_DEPOT_ROOT" : "#{env.LOCAL_DEPOT_ROOT}",
+
+  "REGEX_FILE_NAME" : {regFileFilter},
+
+  "BUCKETNAME" : "#{env.BUCKETNAME}",
+
+  "USERNAME" : "#{env.USERNAME}",
+
+  "PASSWORD" : "#{env.PASSWORD}",
+
+  "REVISION_SENSITIVE" : {revisionSensitive},
+
+  "PARALLELY" : false,
+
+  "VERBOSE" : true,
+
+  "WALK_OPTIONS" : {
+    "followLinks" : false
+  }
+
+}
+"""
+
+
+console.log("TEMPLATE_JOB:"+TEMPLATE_JOB)
+
+
 
 # key: client socket id
 # value: client socket instance
