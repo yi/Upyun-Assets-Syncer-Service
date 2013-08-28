@@ -30,6 +30,8 @@
 
   "dependencies" : {
       "express": "3.x",
+      "dev-logger": ">=0.1.x",
+      "upyun-assets-syncer": ">=0.1.1",
       "socket.io":">=0.9"
   },
   "devDependencies": {
