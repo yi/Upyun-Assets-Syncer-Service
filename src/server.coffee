@@ -6,11 +6,14 @@ util  = require 'util'
 logger = require 'dev-logger'
 child_process = require 'child_process'
 env = require './environment'
+fs = require 'fs'
 
 
 CURRENT_JOB = null
 
 PATH_TO_SYNCER = "#{__dirname}/node_modules/upyun-assets-syncer/bin/upsyncer.coffee"
+
+PATH_TO_CONFIG_FOLDER = "#{__dirname}/temp_conf/"
 
 JOB_SYNC_GRAPHICS = [PATH_TO_SYNCER]
 
@@ -51,6 +54,12 @@ TEMPLATE_JOB = """
 }
 """
 
+REG_FILTER_AMF = /_[a-z0-9]{10}\.sgf/
+
+REG_FILTER_TIMESTAMP = /_amflastmod\.sgf/
+
+REG_FILTER_GRAPHICS = /[a-z0-9]{11}\.sgf/
+
 
 console.log("TEMPLATE_JOB:"+TEMPLATE_JOB)
 
@@ -66,9 +75,13 @@ server.listen(8088)
 app.get '/', (req, res) ->
   res.sendfile(__dirname + '/index.html')
 
-runJob = (config)->
-  unless Array.isArray(config) and config.length > 0
-    logger.error "[server::runJob] bad argument. config:#{config}"
+# compile a job config
+# @param {RegExp} regexpFilter
+# @param {Boolean} revisionSensitive
+runJob = (regexpFilter, revisionSensitive) ->
+
+  unless regexpFilter?
+    error = "[server::compileJobConf] bad argument. #{arguments}"
     return
 
   # only one job at time
@@ -77,7 +90,17 @@ runJob = (config)->
       alert: "当前正有一个任务在进行，请等待当前任务完成后在进行操作"
     return
 
-  CURRENT_JOB = child_process.spawn.apply(null, config)
+  content = TEMPLATE_JOB.replace('{regFileFilter}', regexpFilter.toString()).replace('{revisionSensitive}',Boolean(revisionSensitive))
+
+  fs.mkdirSync(PATH_TO_CONFIG_FOLDER) unless fs.existsSync(PATH_TO_CONFIG_FOLDER)
+
+  pathToSyncJobJson = "#{PATH_TO_CONFIG_FOLDER}/sync_job.json"
+
+  fs.writeFileSync pathToSyncJobJson, content
+
+  logger.log "[server::runJob] pathToSyncJobJson:#{pathToSyncJobJson}, content:#{content}"
+
+  CURRENT_JOB = child_process.spawn.apply(null, [PATH_TO_SYNCER, ['-c', pathToSyncJobJson]])
 
   CURRENT_JOB.stdout.on 'data', (data) ->
     data = String(data)
@@ -112,11 +135,11 @@ io.sockets.on 'connection', (socket) ->
     logger.log "[server::on::action] cmd:#{data.cmd}"
     switch data.cmd
       when CMD_SYNC_GRAPHICS
-        runJob(JOB_SYNC_GRAPHICS)
+        runJob(REG_FILTER_GRAPHICS, false)
       when CMD_SYNC_AMF
-        runJob(JOB_SYNC_AMF)
+        runJob(REG_FILTER_AMF, true)
       when CMD_SYNC_TIMESTAMPE
-        runJob(JOB_SYNC_TIMESTAMP)
+        runJob(REG_FILTER_TIMESTAMP, true )
     return
 
 return
