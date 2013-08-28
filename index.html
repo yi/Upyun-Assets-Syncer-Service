@@ -1,8 +1,65 @@
-<script src="/socket.io/socket.io.js"></script>
-<script>
-  var socket = io.connect('http://localhost');
-  socket.on('log', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
-  });
-</script>
+<html>
+  <head>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var MAX_MSG_COUNT = 50;
+      var MESSAGES = [];
+      var socket = io.connect('/');
+      // var socket = io.connect('http://localhost');
+      socket.on('log', function (data) {
+        console.log("on log");
+        console.log(data);
+        MESSAGES.unshift((new Date) + "-LOG-" + data.message);
+        if(MESSAGES.length > MAX_MSG_COUNT) MESSAGES.length = MAX_MSG_COUNT;
+        updateOutput();
+        // socket.emit('my other event', { my: 'data' });
+      });
+
+      socket.on('error', function (data) {
+        console.log("on error");
+        console.log(data);
+        if(data.message){
+          MESSAGES.unshift(((new Date) + "-ERROR-" + data.message).fontcolor('red'));
+          if(MESSAGES.length > MAX_MSG_COUNT) MESSAGES.length = MAX_MSG_COUNT;
+          updateOutput();
+        }
+
+        if(data.alert != null)
+        {
+          window.alert(data.alert);
+        }
+      });
+
+      updateOutput = function(){
+        document.getElementById('output').innerHTML = "<li>" + MESSAGES.join("</li><li>") + "</li>";
+      }
+
+      function syncAMF(){
+        socket.emit('action', { cmd: 'sync_amf' });
+      };
+
+      function syncGraphics(){
+        socket.emit('action', { cmd: 'sync_graphics' });
+      };
+
+      function syncTimestamp(){
+        socket.emit('action', { cmd: 'sync_timestamp' });
+      };
+
+
+    </script>
+
+  </head>
+  <body>
+    <h1>同步魔道CDN :: Runway -> UPYUN</h1>
+    <button onclick="javascript:syncAMF()" >同步客户端配置</button>
+    <button onclick="javascript:syncGraphics()" >同步素材</button>
+    <button onclick="javascript:syncTimestamp()" >同步时间戳</button>
+    <hr />
+    <ul id="output">
+    </ul>
+  </body>
+
+
+</html>
