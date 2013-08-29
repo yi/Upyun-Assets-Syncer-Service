@@ -47,6 +47,9 @@
         socket.emit('action', { cmd: 'sync_timestamp' });
       };
 
+      function testAMF(){
+        socket.emit('action', { cmd: 'test_amf' });
+      };
 
     </script>
 
@@ -56,6 +59,7 @@
     <button onclick="javascript:syncAMF()" >同步客户端配置</button>
     <button onclick="javascript:syncGraphics()" >同步素材</button>
     <button onclick="javascript:syncTimestamp()" >同步时间戳</button>
+    <button onclick="javascript:testAMF()" >检查客户端配置</button>
     <hr />
     <ul id="output">
     </ul>

@@ -25,6 +25,8 @@ CMD_SYNC_GRAPHICS = 'sync_graphics'
 
 CMD_SYNC_AMF = 'sync_amf'
 
+CMD_TEST_AMF = 'test_amf'
+
 CMD_SYNC_TIMESTAMPE = 'sync_timestamp'
 
 
@@ -75,7 +77,7 @@ app.get '/', (req, res) ->
 # compile a job config
 # @param {RegExp} regexpFilter
 # @param {Boolean} revisionSensitive
-runJob = (regexpFilter, revisionSensitive) ->
+runJob = (regexpFilter, revisionSensitive,istest=false) ->
 
   unless regexpFilter?
     error = "[server::compileJobConf] bad argument. #{arguments}"
@@ -91,13 +93,15 @@ runJob = (regexpFilter, revisionSensitive) ->
 
   fs.mkdirSync(PATH_TO_CONFIG_FOLDER) unless fs.existsSync(PATH_TO_CONFIG_FOLDER)
 
-  pathToSyncJobJson = "#{PATH_TO_CONFIG_FOLDER}/sync_job.json"
+  pathToSyncJobJson = "#{PATH_TO_CONFIG_FOLDER}sync_job.json"
 
   fs.writeFileSync pathToSyncJobJson, content
 
   logger.log "[server::runJob] pathToSyncJobJson:#{pathToSyncJobJson}, content:#{content}"
 
-  CURRENT_JOB = child_process.spawn.apply(null, [PATH_TO_SYNCER, ['-c', pathToSyncJobJson]])
+  argsArr = ['-c', pathToSyncJobJson]
+  argsArr.push '-t' if istest
+  CURRENT_JOB = child_process.spawn.apply(null, [PATH_TO_SYNCER, argsArr])
 
   CURRENT_JOB.stdout.on 'data', (data) ->
     data = String(data)
@@ -135,11 +139,12 @@ io.sockets.on 'connection', (socket) ->
         runJob(REG_FILTER_GRAPHICS, false)
       when CMD_SYNC_AMF
         runJob(REG_FILTER_AMF, true)
+      when CMD_TEST_AMF
+        runJob(REG_FILTER_AMF, true,true)
       when CMD_SYNC_TIMESTAMPE
         runJob(REG_FILTER_TIMESTAMP, true )
     return
 
 return
-
 
 
