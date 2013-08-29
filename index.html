@@ -47,6 +47,21 @@
         socket.emit('action', { cmd: 'sync_timestamp' });
       };
 
+
+      function syncSingleWuid(){
+        var wuid = document.getElementById('wuid').value;
+        console.log('wuid:'+wuid);
+        if(wuid == null)
+        {
+          window.alert('please enter wuid');
+          return;
+        }
+        socket.emit('action', {
+          cmd: 'sync_wuid',
+          wuid:  wuid
+        });
+      };
+
       function testAMF(){
         socket.emit('action', { cmd: 'test_amf' });
       };
@@ -56,10 +71,24 @@
   </head>
   <body>
     <h1>同步魔道CDN :: Runway -> UPYUN</h1>
-    <button onclick="javascript:syncAMF()" >同步客户端配置</button>
-    <button onclick="javascript:syncGraphics()" >同步素材</button>
-    <button onclick="javascript:syncTimestamp()" >同步时间戳</button>
-    <button onclick="javascript:testAMF()" >检查客户端配置</button>
+    <span>
+      <span style="margin-left:1em;">
+        <button onclick="javascript:syncAMF()" >同步客户端配置</button>
+      </span>
+      <span style="margin-left:1em;">
+        <button onclick="javascript:syncGraphics()" >同步素材</button>
+      </span>
+      <span style="margin-left:1em;">
+        <button onclick="javascript:syncTimestamp()" >同步时间戳</button>
+      </span>
+      <span style="margin-left:1em;">
+        <input id="wuid" type="text" name="wuid" placeholder="wuid">
+        <button onclick="javascript:syncSingleWuid()" >同步单个WUID</button>
+      </span>
+    </span>
+    <span style="margin-left:2em;">
+      <button onclick="javascript:testAMF()" >检查客户端配置</button>
+    </span>
     <hr />
     <ul id="output">
     </ul>

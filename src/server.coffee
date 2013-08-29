@@ -7,6 +7,7 @@ logger = require 'dev-logger'
 child_process = require 'child_process'
 env = require './environment'
 fs = require 'fs'
+_ = require "underscore"
 
 
 CURRENT_JOB = null
@@ -29,11 +30,13 @@ CMD_TEST_AMF = 'test_amf'
 
 CMD_SYNC_TIMESTAMPE = 'sync_timestamp'
 
+CMD_SYNC_WUID = 'sync_wuid'
+
 
 TEMPLATE_JOB = """
 {
 
-  "LOCAL_DEPOT_ROOT" : "#{env.LOCAL_DEPOT_ROOT}",
+  "LOCAL_DEPOT_ROOT" : "#{env.LOCAL_DEPOT_ROOT}{subPath}",
 
   "REGEX_FILE_NAME" : {regFileFilter},
 
@@ -47,7 +50,7 @@ TEMPLATE_JOB = """
 
   "PARALLELY" : false,
 
-  "VERBOSE" : false,
+  "VERBOSE" : true,
 
   "WALK_OPTIONS" : {
     "followLinks" : false
@@ -77,7 +80,7 @@ app.get '/', (req, res) ->
 # compile a job config
 # @param {RegExp} regexpFilter
 # @param {Boolean} revisionSensitive
-runJob = (regexpFilter, revisionSensitive,istest=false) ->
+runJob = (regexpFilter, revisionSensitive, subPath='', istest=false) ->
 
   unless regexpFilter?
     error = "[server::compileJobConf] bad argument. #{arguments}"
@@ -89,7 +92,10 @@ runJob = (regexpFilter, revisionSensitive,istest=false) ->
       message : "当前正有一个任务在进行，请等待当前任务完成后在进行操作"
     return
 
-  content = TEMPLATE_JOB.replace('{regFileFilter}', regexpFilter.toString()).replace('{revisionSensitive}',Boolean(revisionSensitive))
+  content = TEMPLATE_JOB.
+    replace('{regFileFilter}', regexpFilter.toString()).
+    replace('{revisionSensitive}',Boolean(revisionSensitive)).
+    replace('{subPath}', subPath)
 
   fs.mkdirSync(PATH_TO_CONFIG_FOLDER) unless fs.existsSync(PATH_TO_CONFIG_FOLDER)
 
@@ -135,14 +141,29 @@ io.sockets.on 'connection', (socket) ->
   socket.on 'action', (data)->
     logger.log "[server::on::action] cmd:#{data.cmd}"
     switch data.cmd
+
       when CMD_SYNC_GRAPHICS
         runJob(REG_FILTER_GRAPHICS, false)
+
       when CMD_SYNC_AMF
-        runJob(REG_FILTER_AMF, true)
+        runJob(REG_FILTER_AMF, true, "/_")
+
       when CMD_TEST_AMF
-        runJob(REG_FILTER_AMF, true,true)
+        runJob(REG_FILTER_AMF, true, "/_", true)
+
       when CMD_SYNC_TIMESTAMPE
-        runJob(REG_FILTER_TIMESTAMP, true )
+        runJob(REG_FILTER_TIMESTAMP, true , "/_")
+
+      when CMD_SYNC_WUID
+        wuid = data.wuid
+        if _.isString(wuid) and wuid.length is 11
+          runJob("/#{wuid}\\.sgf/", true , "/#{wuid.charAt(0)}")
+        else
+          io.sockets.emit 'error',
+            message : "bad wuid:#{wuid}"
+      else
+        io.sockets.emit 'error',
+          message : "unknow action:#{data.cmd}"
     return
 
 return
