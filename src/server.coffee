@@ -36,15 +36,15 @@ CMD_SYNC_WUID = 'sync_wuid'
 TEMPLATE_JOB = """
 {
 
-  "LOCAL_DEPOT_ROOT" : "#{env.LOCAL_DEPOT_ROOT}{subPath}",
+  "LOCAL_DEPOT_ROOT" : "#{env.ASSETS_PATH}{subPath}",
 
   "REGEX_FILE_NAME" : {regFileFilter},
 
-  "BUCKETNAME" : "#{env.BUCKETNAME}",
+  "BUCKETNAME" : "#{env.UPYUN_BUCKETNAME}",
 
-  "USERNAME" : "#{env.USERNAME}",
+  "USERNAME" : "#{env.UPYUN_USERNAME}",
 
-  "PASSWORD" : "#{env.PASSWORD}",
+  "PASSWORD" : "#{env.UPYUN_PASSWORD}",
 
   "REVISION_SENSITIVE" : {revisionSensitive},
 

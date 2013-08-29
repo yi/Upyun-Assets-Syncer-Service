@@ -2,13 +2,13 @@
 # 设置表
 settings =
 
-  LOCAL_DEPOT_ROOT : "/path/to/asset"
+  ASSETS_PATH : "/path/to/asset"
 
-  BUCKETNAME : "________"
+  UPYUN_BUCKETNAME : "________"
 
-  USERNAME : "_________"
+  UPYUN_USERNAME : "_________"
 
-  PASSWORD : "__________"
+  UPYUN_PASSWORD : "__________"
 
 
   # 加载外部配置的帮助方法

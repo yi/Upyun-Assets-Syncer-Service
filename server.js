@@ -42,7 +42,7 @@
 
   CMD_SYNC_WUID = 'sync_wuid';
 
-  TEMPLATE_JOB = "{\n\n  \"LOCAL_DEPOT_ROOT\" : \"" + env.LOCAL_DEPOT_ROOT + "{subPath}\",\n\n  \"REGEX_FILE_NAME\" : {regFileFilter},\n\n  \"BUCKETNAME\" : \"" + env.BUCKETNAME + "\",\n\n  \"USERNAME\" : \"" + env.USERNAME + "\",\n\n  \"PASSWORD\" : \"" + env.PASSWORD + "\",\n\n  \"REVISION_SENSITIVE\" : {revisionSensitive},\n\n  \"PARALLELY\" : false,\n\n  \"VERBOSE\" : true,\n\n  \"WALK_OPTIONS\" : {\n    \"followLinks\" : false\n  }\n\n}";
+  TEMPLATE_JOB = "{\n\n  \"LOCAL_DEPOT_ROOT\" : \"" + env.ASSETS_PATH + "{subPath}\",\n\n  \"REGEX_FILE_NAME\" : {regFileFilter},\n\n  \"BUCKETNAME\" : \"" + env.UPYUN_BUCKETNAME + "\",\n\n  \"USERNAME\" : \"" + env.UPYUN_USERNAME + "\",\n\n  \"PASSWORD\" : \"" + env.UPYUN_PASSWORD + "\",\n\n  \"REVISION_SENSITIVE\" : {revisionSensitive},\n\n  \"PARALLELY\" : false,\n\n  \"VERBOSE\" : true,\n\n  \"WALK_OPTIONS\" : {\n    \"followLinks\" : false\n  }\n\n}";
 
   REG_FILTER_AMF = /_[a-z0-9]{10}\.sgf/;
 

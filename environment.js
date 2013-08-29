@@ -4,10 +4,10 @@
     __hasProp = {}.hasOwnProperty;
 
   settings = {
-    LOCAL_DEPOT_ROOT: "/path/to/asset",
-    BUCKETNAME: "________",
-    USERNAME: "_________",
-    PASSWORD: "__________",
+    ASSETS_PATH: "/path/to/asset",
+    UPYUN_BUCKETNAME: "________",
+    UPYUN_USERNAME: "_________",
+    UPYUN_PASSWORD: "__________",
     load: function(module) {
       var e, key, localSettings, value, _results;
       try {
